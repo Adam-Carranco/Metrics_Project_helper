@@ -1,4 +1,3 @@
-
 import itertools
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -52,8 +51,9 @@ def find_best_predictor(df):
 
     for i, feature in enumerate(best_features):
         ax = axes[i]
+        sorted_indices = best_df[feature].argsort()
         ax.scatter(best_df[feature], best_df["pass/fail status"], color="b", label="Data")
-        ax.plot(best_df[feature], model.predict(best_df[[feature]]), color="r", label="Regression Line")
+        ax.plot(best_df[feature].iloc[sorted_indices], model.predict(X.iloc[sorted_indices]), color="r", label="Regression Line")
         ax.set_ylabel("Pass/Fail Status")
         ax.set_title(f"{feature} vs. Pass/Fail Status")
         ax.legend()
@@ -68,4 +68,3 @@ def find_best_predictor(df):
 best_df, best_features, best_correlation = find_best_predictor(data_frame)
 print("Best Features:", best_features)
 print("Best Correlation:", best_correlation)
-
