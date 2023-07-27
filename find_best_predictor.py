@@ -1,3 +1,4 @@
+
 import itertools
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -13,8 +14,9 @@ def find_best_predictor(df):
     best_correlation = -1
     best_features = []
 
-    # Iterate through all possible combinations of metrics
-    for r in range(1, len(data_columns) + 1):
+    # Iterate through all possible combinations of metrics with at most 4 metrics at a time
+    max_metrics_combinations = 4
+    for r in range(1, min(max_metrics_combinations, len(data_columns)) + 1):
         for combination in itertools.combinations(data_columns, r):
             # Combine the selected columns with the "pass/fail status" column
             selected_columns = ["pass/fail status"] + list(combination)
@@ -66,3 +68,4 @@ def find_best_predictor(df):
 best_df, best_features, best_correlation = find_best_predictor(data_frame)
 print("Best Features:", best_features)
 print("Best Correlation:", best_correlation)
+
