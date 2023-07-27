@@ -1,9 +1,7 @@
 import itertools
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
 from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import PolynomialFeatures
 from scipy.stats import pearsonr
 
 def find_best_predictor(df):
@@ -32,19 +30,12 @@ def find_best_predictor(df):
             X = selected_df.iloc[:, 1:]
             y = selected_df.iloc[:, 0]
 
-            # Check if there are enough data points for polynomial regression
-            if len(X) <= r:
-                continue
-
-            # Fit a polynomial regression model
-            polynomial_features = PolynomialFeatures(degree=2)  # You can set the degree as desired (e.g., 2, 3, 4, ...)
-            X_poly = polynomial_features.fit_transform(X)
-
+            # Fit a linear regression model
             model = LinearRegression()
-            model.fit(X_poly, y)
+            model.fit(X, y)
 
             # Calculate the correlation coefficient between predicted and actual values
-            y_pred = model.predict(X_poly)
+            y_pred = model.predict(X)
             correlation, _ = pearsonr(y, y_pred)
 
             # Update the best correlation and features if necessary
@@ -58,26 +49,16 @@ def find_best_predictor(df):
     # Plot the regression lines for each feature
     num_plots = len(best_features)
     fig, axes = plt.subplots(nrows=num_plots, ncols=1, figsize=(10, 6*num_plots), sharex=True)
-    fig.suptitle("Polynomial Regression - Best Predictors", fontsize=16)
+    fig.suptitle("Linear Regression - Best Predictors", fontsize=16)
 
     for i, feature in enumerate(best_features):
         ax = axes[i]
-        sorted_indices = best_df[feature].argsort()
         ax.scatter(best_df[feature], best_df["Pass/Fail Status.1"], color="b", label="Data")
-
-        # Create polynomial features for plotting the regression line
-        X_plot = np.linspace(min(best_df[feature]), max(best_df[feature]), 100).reshape(-1, 1)
-        X_plot_poly = polynomial_features.transform(X_plot)
-        y_plot = model.predict(X_plot_poly)
-        ax.plot(X_plot, y_plot, color="r", label="Regression Line")
+        ax.plot(best_df[feature], model.predict(X), color="r", label="Regression Line")
 
         ax.set_ylabel("Pass/Fail Status")
         ax.set_title(f"{feature} vs. Pass/Fail Status")
         ax.legend()
-
-        # Set individual axis limits for each subplot
-        ax.set_xlim(min(best_df[feature]), max(best_df[feature]))
-        ax.set_ylim(min(best_df["Pass/Fail Status.1"]), max(best_df["Pass/Fail Status.1"]))
 
     plt.xlabel("Metrics")
     plt.show()
