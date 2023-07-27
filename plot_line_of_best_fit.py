@@ -4,7 +4,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 from scipy.stats import pearsonr
 
-def plot_polynomial_best_fit(df, degree=3):
+def plot_polynomial_best_fit(df):
     # Convert the "Pass/Fail Status.1" column to a binary format (1 for pass, 0 for fail)
     df["Pass/Fail Status.1"] = df["Pass/Fail Status.1"].replace({3: 1, 2: None, 1: 0})
 
@@ -17,8 +17,8 @@ def plot_polynomial_best_fit(df, degree=3):
         X = df[[column]]
         y = df["Pass/Fail Status.1"]
 
-        # Create polynomial features
-        polynomial_features = PolynomialFeatures(degree=degree)
+        # Create third-degree polynomial features
+        polynomial_features = PolynomialFeatures(degree=3)
         X_poly = polynomial_features.fit_transform(X)
 
         # Fit a polynomial regression model
@@ -29,13 +29,13 @@ def plot_polynomial_best_fit(df, degree=3):
         y_pred = polynomial_model.predict(X_poly)
         r_squared = pearsonr(y, y_pred)[0] ** 2
 
-        # Plot the data and the polynomial regression line
+        # Plot the data and the third-degree polynomial regression line
         plt.scatter(X, y, color="b", label="Data")
 
         # Sort the data for smoother plot
         X_sorted, y_pred_sorted = zip(*sorted(zip(X.values, y_pred)))
 
-        plt.plot(X_sorted, y_pred_sorted, color="r", label=f"Polynomial Degree {degree} (R-squared: {r_squared:.2f})")
+        plt.plot(X_sorted, y_pred_sorted, color="r", label=f"3rd Degree Polynomial (R-squared: {r_squared:.2f})")
 
         plt.xlabel(column)
         plt.ylabel("Pass/Fail Status")
@@ -45,4 +45,4 @@ def plot_polynomial_best_fit(df, degree=3):
 
 # Example usage:
 # Assuming your DataFrame is named "data_frame"
-plot_polynomial_best_fit(data_frame, degree=3)
+plot_polynomial_best_fit(data_frame)
