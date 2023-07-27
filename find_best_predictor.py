@@ -43,14 +43,20 @@ def find_best_predictor(df):
     # Re-create the selected DataFrame with the best combination of features
     best_df = df[["pass/fail status"] + best_features]
 
-    # Plot the regression line and correlation
-    fig, ax = plt.subplots(figsize=(10, 6))
-    ax.scatter(best_df[best_features], best_df["pass/fail status"], color="b", label="Data")
-    ax.plot(best_df[best_features], model.predict(best_df[best_features]), color="r", label="Regression Line")
-    ax.set_xlabel("Metrics")
-    ax.set_ylabel("Pass/Fail Status")
-    ax.set_title("Linear Regression - Best Predictor")
-    ax.legend()
+    # Plot the regression lines for each feature
+    num_plots = len(best_features)
+    fig, axes = plt.subplots(nrows=num_plots, ncols=1, figsize=(10, 6*num_plots), sharex=True)
+    fig.suptitle("Linear Regression - Best Predictors", fontsize=16)
+
+    for i, feature in enumerate(best_features):
+        ax = axes[i]
+        ax.scatter(best_df[feature], best_df["pass/fail status"], color="b", label="Data")
+        ax.plot(best_df[feature], model.predict(best_df[[feature]]), color="r", label="Regression Line")
+        ax.set_ylabel("Pass/Fail Status")
+        ax.set_title(f"{feature} vs. Pass/Fail Status")
+        ax.legend()
+
+    plt.xlabel("Metrics")
     plt.show()
 
     return best_df, best_features, best_correlation
