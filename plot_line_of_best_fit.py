@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import PolynomialFeatures
 from scipy.stats import pearsonr
 
 def plot_polynomial_best_fit(df):
@@ -17,23 +17,19 @@ def plot_polynomial_best_fit(df):
         X = df[[column]]
         y = df["Pass/Fail Status.1"]
 
-        # Create third-degree polynomial features
-        polynomial_features = PolynomialFeatures(degree=3)
-        X_poly = polynomial_features.fit_transform(X)
-
-        # Fit a polynomial regression model
-        polynomial_model = LinearRegression()
-        polynomial_model.fit(X_poly, y)
+        # Fit a third-degree polynomial regression model
+        coefs = np.polyfit(X.squeeze(), y, 3)
+        polynomial_model = np.poly1d(coefs)
 
         # Calculate the correlation coefficient (R-squared) between predicted and actual values
-        y_pred = polynomial_model.predict(X_poly)
+        y_pred = polynomial_model(X.squeeze())
         r_squared = pearsonr(y, y_pred)[0] ** 2
 
         # Plot the data and the third-degree polynomial regression line
         plt.scatter(X, y, color="b", label="Data")
 
         # Sort the data for smoother plot
-        X_sorted, y_pred_sorted = zip(*sorted(zip(X.values, y_pred)))
+        X_sorted, y_pred_sorted = zip(*sorted(zip(X.squeeze(), y_pred)))
 
         plt.plot(X_sorted, y_pred_sorted, color="r", label=f"3rd Degree Polynomial (R-squared: {r_squared:.2f})")
 
