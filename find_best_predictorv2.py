@@ -14,11 +14,11 @@ def find_best_predictor(df):
     best_correlation = -1
     best_features = []
 
-    # Maximum number of metrics to compare
-    max_metrics_combinations = 10
+    # Maximum number of metrics to compare (at most 5)
+    max_metrics_combinations = 5
     num_metrics = min(max_metrics_combinations, len(data_columns))
 
-    # Iterate through all possible combinations of metrics with at most 10 metrics at a time
+    # Iterate through all possible combinations of metrics with at most 5 metrics at a time
     for r in range(1, num_metrics + 1):
         for combination in itertools.combinations(data_columns, r):
             # Combine the selected columns with the "Pass/Fail Status.1" column
@@ -31,6 +31,10 @@ def find_best_predictor(df):
             # Prepare the input features and target variable
             X = selected_df.iloc[:, 1:]
             y = selected_df.iloc[:, 0]
+
+            # Check if there are enough data points for polynomial regression
+            if len(X) <= r:
+                continue
 
             # Fit a polynomial regression model
             polynomial_features = PolynomialFeatures(degree=2)  # You can set the degree as desired (e.g., 2, 3, 4, ...)
