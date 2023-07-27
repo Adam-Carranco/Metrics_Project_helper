@@ -13,9 +13,12 @@ def find_best_predictor(df):
     best_correlation = -1
     best_features = []
 
-    # Iterate through all possible combinations of metrics with at most 4 metrics at a time
-    max_metrics_combinations = 4
-    for r in range(1, min(max_metrics_combinations, len(data_columns)) + 1):
+    # Maximum number of metrics to compare
+    max_metrics_combinations = 10
+    num_metrics = min(max_metrics_combinations, len(data_columns))
+
+    # Iterate through all possible combinations of metrics with at most 10 metrics at a time
+    for r in range(1, num_metrics + 1):
         for combination in itertools.combinations(data_columns, r):
             # Combine the selected columns with the "pass/fail status" column
             selected_columns = ["pass/fail status"] + list(combination)
