@@ -1,9 +1,10 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures
 from scipy.stats import pearsonr
 
-def plot_line_of_best_fit(df):
+def plot_polynomial_best_fit(df, degree=3):
     # Convert the "Pass/Fail Status.1" column to a binary format (1 for pass, 0 for fail)
     df["Pass/Fail Status.1"] = df["Pass/Fail Status.1"].replace({3: 1, 2: None, 1: 0})
 
@@ -16,17 +17,25 @@ def plot_line_of_best_fit(df):
         X = df[[column]]
         y = df["Pass/Fail Status.1"]
 
-        # Fit a linear regression model
-        linear_model = LinearRegression()
-        linear_model.fit(X, y)
+        # Create polynomial features
+        polynomial_features = PolynomialFeatures(degree=degree)
+        X_poly = polynomial_features.fit_transform(X)
+
+        # Fit a polynomial regression model
+        polynomial_model = LinearRegression()
+        polynomial_model.fit(X_poly, y)
 
         # Calculate the correlation coefficient (R-squared) between predicted and actual values
-        y_pred = linear_model.predict(X)
+        y_pred = polynomial_model.predict(X_poly)
         r_squared = pearsonr(y, y_pred)[0] ** 2
 
-        # Plot the data and the line of best fit
+        # Plot the data and the polynomial regression line
         plt.scatter(X, y, color="b", label="Data")
-        plt.plot(X, y_pred, color="r", label=f"Line of Best Fit (R-squared: {r_squared:.2f})")
+
+        # Sort the data for smoother plot
+        X_sorted, y_pred_sorted = zip(*sorted(zip(X.values, y_pred)))
+
+        plt.plot(X_sorted, y_pred_sorted, color="r", label=f"Polynomial Degree {degree} (R-squared: {r_squared:.2f})")
 
         plt.xlabel(column)
         plt.ylabel("Pass/Fail Status")
@@ -36,4 +45,4 @@ def plot_line_of_best_fit(df):
 
 # Example usage:
 # Assuming your DataFrame is named "data_frame"
-plot_line_of_best_fit(data_frame)
+plot_polynomial_best_fit(data_frame, degree=3)
