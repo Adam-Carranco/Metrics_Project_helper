@@ -64,11 +64,16 @@ def find_best_predictor(df):
         # Create polynomial features for plotting the regression line
         X_plot = np.linspace(min(best_df[feature]), max(best_df[feature]), 100).reshape(-1, 1)
         X_plot_poly = polynomial_features.transform(X_plot)
-        ax.plot(X_plot, model.predict(X_plot_poly), color="r", label="Regression Line")
+        y_plot = model.predict(X_plot_poly)
+        ax.plot(X_plot, y_plot, color="r", label="Regression Line")
 
         ax.set_ylabel("Pass/Fail Status")
         ax.set_title(f"{feature} vs. Pass/Fail Status")
         ax.legend()
+
+        # Set individual axis limits for each subplot
+        ax.set_xlim(min(best_df[feature]), max(best_df[feature]))
+        ax.set_ylim(min(best_df["Pass/Fail Status.1"]), max(best_df["Pass/Fail Status.1"]))
 
     plt.xlabel("Metrics")
     plt.show()
